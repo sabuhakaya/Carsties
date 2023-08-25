@@ -1,0 +1,18 @@
+version: '3'
+services:
+  postgres:
+    ports:
+      - '5433:5432'
+    container_name: container-postgresql
+    environment:
+      - POSTGRES_PASSWORD=mypass
+    volumes:
+      - 'container-postgresql-volume:/var/lib/postgresql/data'
+    image: 'postgres:10.4'
+    networks:
+      - container-network
+volumes:
+  container-postgresql-volume:
+networks:
+  container-network:
+    driver: bridge
