@@ -11,8 +11,20 @@ services:
     image: 'postgres:10.4'
     networks:
       - container-network
+  mongodb:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=mongopw
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/var/lib/mongodb/data
+    networks:
+      - container-network
 volumes:
   container-postgresql-volume:
+  mongodata:
 networks:
   container-network:
     driver: bridge
