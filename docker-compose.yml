@@ -22,6 +22,11 @@ services:
       - mongodata:/var/lib/mongodb/data
     networks:
       - container-network
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
 volumes:
   container-postgresql-volume:
   mongodata:
