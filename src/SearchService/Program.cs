@@ -12,13 +12,21 @@ builder.Services.AddHttpClient<AuctionSvcHttpClient>()
 .AddPolicyHandler(GetPolicy());
 
 //Mass Transit Service
-builder.Services.AddMassTransit( x => 
-{   
+builder.Services.AddMassTransit(x =>
+{
     //Connect the Consumer
     x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
-    
-    x.UsingRabbitMq((context, cfg) => {
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        //if mongo db down
+        cfg.ReceiveEndpoint("search-auction-created", e =>
+        {
+            e.UseMessageRetry(r => r.Interval(5, 5));
+            e.ConfigureConsumer<AuctionCreatedConsumer>(context);
+        });
+
         cfg.ConfigureEndpoints(context);
     });
 });

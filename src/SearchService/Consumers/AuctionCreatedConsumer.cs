@@ -19,6 +19,10 @@ public class AuctionCreatedConsumer : IConsumer<AuctionCreated>
     {
         Console.WriteLine("--> Consuming Auction Created: " + context.Message.Id);
         var item = _mapper.Map<Item>(context.Message);
+
+        // To handle Fault queues example
+        if(item.Model == "Foo") throw new ArgumentException("Cannot Sell cars of Model Foo");
+
         await item.SaveAsync();
     }
 
