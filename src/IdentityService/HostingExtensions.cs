@@ -1,6 +1,7 @@
 using Duende.IdentityServer;
 using IdentityServer.Data;
 using IdentityServer.Models;
+using IdentityService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -34,7 +35,10 @@ internal static class HostingExtensions
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
-            .AddAspNetIdentity<ApplicationUser>();
+            .AddAspNetIdentity<ApplicationUser>()
+
+            //Added this line to view username in our access token
+            .AddProfileService<CustomProfileService>();
         
         //To make sure that cookie settings work correctly for http 
         builder.Services.ConfigureApplicationCookie(options =>

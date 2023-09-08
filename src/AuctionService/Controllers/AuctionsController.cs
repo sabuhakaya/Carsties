@@ -5,6 +5,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Contracts;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,11 +53,15 @@ public class AuctionController : ControllerBase
 
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto auctionDto)
     {
         var auction = _mapper.Map<Auction>(auctionDto);
-        auction.Seller = "Test";
+
+        //IdentityServer
+        auction.Seller = User.Identity.Name;
+
         _context.Auctions.Add(auction);
 
 
@@ -75,6 +80,7 @@ public class AuctionController : ControllerBase
 
     }
 
+    [Authorize] //to test identityserver
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateAuction(Guid id, UpdateAuctionDto updateAuctionDto)
     {
@@ -82,6 +88,8 @@ public class AuctionController : ControllerBase
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (auction == null) return NotFound();
+        //Identity Server
+        if (auction.Seller != User.Identity.Name) return Forbid();
 
         //TODO: check seller == username
 
@@ -99,6 +107,7 @@ public class AuctionController : ControllerBase
         return BadRequest("Problem Saving Changes");
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteAuction(Guid id)
     {
@@ -106,11 +115,12 @@ public class AuctionController : ControllerBase
         if (auction == null) return NotFound();
 
         //TODO: check seller == username
+        if (auction.Seller != User.Identity.Name) return Forbid();
 
         _context.Auctions.Remove(auction);
 
         //MassTransit delete Message
-        await _publishEndpoint.Publish<AuctionDeleted>(new {Id = auction.Id.ToString()});
+        await _publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString() });
 
         var result = await _context.SaveChangesAsync() > 0;
         if (!result) return BadRequest("Could not update DB");
