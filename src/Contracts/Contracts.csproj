@@ -6,4 +6,12 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="BidPlaced" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="BidPlaced" />
+  </ItemGroup>
+
 </Project>

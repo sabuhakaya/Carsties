@@ -1,4 +1,5 @@
 using AuctionService.Entities;
+using Contracts;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,4 +22,8 @@ public class AuctionDBContext: DbContext{
         modelBuilder.AddOutboxStateEntity();
     }
 
+    public static implicit operator AuctionDBContext(AuctionFinished v)
+    {
+        throw new NotImplementedException();
+    }
 }
